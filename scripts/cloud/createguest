@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+	echo "ERROR: ./createguest {guestname}"
+	exit
+fi
+
+echo undefining $1...
+sudo virsh undefine $1
+
+echo deleting volume $1.img...
+sudo virsh vol-delete $1.img --pool default
+
+echo cloning new $1 from server-template.img
+sudo virsh vol-clone server-template.img $1.img --pool default
+
+echo defining $1...
+sudo virsh define /home/michael/libvirt/$1.xml
+

@@ -1,0 +1,5 @@
+#/bin/sh
+
+cru a lightsoff "0 22 * * * /jffs/scripts/ledsoff.sh"
+cru a lightson "0 7 * * * /jffs/scripts/ledson.sh"
+cru a ddns "* */4 * * * /jffs/scripts/ddns"

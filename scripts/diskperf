@@ -1,0 +1,16 @@
+#!/bin/bash
+
+img_file="/tmp/diskperf.img"
+img_size="512M"
+
+echo -n "calculating time to write ${img_size} to file ${img_file}..."
+
+elapsed_time=`/usr/bin/time dd if=/dev/zero of=${img_file} bs=${img_size} count=1 oflag=dsync 2>&1| grep elapsed | awk '{ print $3 }' | sed 's/elapsed//'`
+
+echo "done"
+
+if test -f ${img_file}; then
+	rm ${img_file}
+fi
+
+echo "elapsed time: ${elapsed_time}"

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+function loge
+{
+	echo "ERROR: $1"	
+}
+
+function get_os {
+	if test -f /etc/centos-release; then
+		if cat /etc/centos-release | grep "release 8" > /dev/null; then
+			echo "centos8"
+			return 0
+		else
+			echo "centos"
+			return 0
+		fi
+	elif test -f /etc/redhat-release; then
+		if cat /etc/redhat-release | grep "release 8" > /dev/null; then
+			echo "rhel8"
+			return 0
+		else
+			echo "rhel"
+			return 0
+		fi
+	elif test -f /etc/fedora-release; then
+		echo "fedora"
+		return 0
+	elif test -f /etc/os-release && cat /etc/os-release | grep ubuntu > /dev/null 2>&1; then
+		echo "ubuntu"
+		return 0
+	elif test -f /etc/debian_version; then
+		echo "debian"
+		return 0
+	else
+		echo "unknown"
+		return 1
+	fi
+}
+
+function is_root {
+	if [ "$SUDO_USER" == "" ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+function get_current_dir {
+	echo `pwd`
+}
+
+export CUR_DIR=`get_current_dir`
+
+# this section is for BASH functions
+
+function us {
+	sudo -i -u $*
+}

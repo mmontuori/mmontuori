@@ -1,0 +1,38 @@
+#!/bin/bash
+
+to_view_dir="/mnt/storage/media-library/video/Movies/To View/"
+viewed_dir="/mnt/storage/media-library/video/Movies/Viewed/"
+tmp_file=`mktemp`
+
+
+ls -t "$to_view_dir" | head -20 > $tmp_file
+
+cnt=1
+
+while read file; do
+	echo "$cnt - $file"
+	cnt=`expr $cnt + 1`
+done<$tmp_file
+
+echo -n "select the watched movie number: "
+read watched_num
+
+cnt=1
+
+while read file; do
+	if [ "$cnt" == "$watched_num" ]; then
+		break
+	fi
+        cnt=`expr $cnt + 1`
+done<$tmp_file
+
+echo "move file $file to watched directory? (CTRL-C) to interrupt"
+read cont
+
+echo -n "moving file..."
+if ! mv "${to_view_dir}${file}" "${viewed_dir}"; then
+	echo "ERROR moving file"
+fi
+echo "done"
+
+rm $tmp_file

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#deb http://debian.datastax.com/community stable main
+
+source_file=/etc/apt/sources.list
+
+gpg --keyserver pgp.mit.edu --recv-keys F758CE318D77295D
+gpg --export --armor F758CE318D77295D | sudo apt-key add -
+gpg --keyserver pgp.mit.edu --recv-keys 2B5C1B00
+gpg --export --armor 2B5C1B00 | sudo apt-key add -
+
+if ! grep "cassandra" $source_file >/dev/null 2>&1; then
+	echo "adding repository to $source_file"
+	echo "deb http://www.apache.org/dist/cassandra/debian 11x main" >> $source_file
+	echo "deb-src http://www.apache.org/dist/cassandra/debian 11x main" >> $source_file
+fi
+
+apt-get update
+apt-get -y install cassandra

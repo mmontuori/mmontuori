@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/opt/etc/init.d/rc.unslung stop
+rm /opt/var/run/dbus.pid

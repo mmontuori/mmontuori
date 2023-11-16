@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source ~/bin/mfuncs
+
+vmware_home="/home/michael/vmware"
+
+if [ "$1" == "" ]; then
+	loge "invalid vm name"
+	exit
+elif [ "$1" == "list" ]; then
+	echo "listing virtual machines..."
+	vms=`cd ~/vmware; ls`
+	echo "$vms"
+	exit
+fi
+vm_name="$1"
+
+vmrun start "${vmware_home}/${vm_name}/${vm_name}.vmx" nogui

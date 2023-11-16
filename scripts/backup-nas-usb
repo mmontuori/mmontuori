@@ -1,0 +1,46 @@
+#!/opt/bin/bash
+
+BACK_DIR=/share/USB2/nas-backup
+EXCLUDE_FILE=/share/Public/git-repos/mmontuori/etc/backup-nas-usb.exclude
+INCLUDE_FILE=/share/Public/git-repos/mmontuori/etc/backup-nas-usb.include
+
+if ! test -f ${EXCLUDE_FILE}; then
+	echo "ERROR: missing exclude file ${EXCLUDE_FILE}!"
+	exit 1
+fi
+
+if ! test -f ${INCLUDE_FILE}; then
+	echo "ERROR: missing include file ${INCLUDE_FILE}!"
+	exit 1
+fi
+
+if ! which rsync>/dev/null 2>&1; then
+	echo "rsync utility not found!!!"
+	exit
+fi
+
+if ! test -d ${BACK_DIR}; then
+	echo "${BACK_DIR} not found!!!"
+	exit
+fi
+
+while read file_to_backup; do
+	if [ "$file_to_backup" == "" ]; then
+		continue
+	fi
+	if echo "$file_to_backup" | sed 's/ //g' | grep "^#" >/dev/null; then
+		continue
+	fi
+	dir_to_backup=`echo "${file_to_backup}" | awk -F, '{ print $1 }'`
+	backup_dir=`echo "${file_to_backup}" | awk -F, '{ print $2 }' | sed 's/^ //'`
+	if [ "$dir_to_backup" == "" ]; then
+		continue
+	fi
+	if [ "$backup_dir" == "" ]; then
+		continue
+	fi
+	echo "backing up $dir_to_backup -> ${BACK_DIR}/${backup_dir}..."
+		
+	rsync --links --exclude-from ${EXCLUDE_FILE} -azhP "${dir_to_backup}" ${BACK_DIR}/${backup_dir}/ --delete-excluded
+done<${INCLUDE_FILE}
+

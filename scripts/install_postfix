@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+
+dnf -y remove sendmail
+
+dnf -y install postfix mailx
+
+systemctl enable postfix
+
+systemctl start postfix
+
+echo "Don't forget to set the FQDN hostname"
+

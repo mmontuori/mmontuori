@@ -1,0 +1,4 @@
+#!/bin/sh
+
+wget -O '-' "http://michael.montuori@gmail.com:michele1@www.dnsdynamic.org/api/?hostname=mmontuori.dnsget.org&myip=@IP" >/dev/null 2>&1
+

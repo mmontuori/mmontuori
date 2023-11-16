@@ -1,0 +1,211 @@
+#!/bin/bash
+
+if ! which tugboat >/dev/null 2>&1; then
+	echo "tugboat must be installed for this program to function"
+	exit 1
+fi
+
+function list_guests() {
+	echo "======================================"
+	tugboat droplets
+	echo "======================================"
+}
+
+function list_images() {
+	echo "======================================"
+	tugboat images -g
+	echo "======================================"
+}
+
+function list_regions() {
+	echo "======================================"
+	tugboat regions
+	echo "======================================"
+}
+
+function list_keys() {
+	echo "======================================"
+	tugboat keys
+	echo "======================================"
+}
+
+function list_sizes() {
+	echo "======================================"
+	tugboat sizes
+	echo "======================================"
+}
+
+function ssh_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat ssh $guest_name
+	display_menu
+}
+
+function destroy_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat destroy $guest_name
+}
+
+function list_info() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat info $guest_name
+}
+
+function create_guest() {
+	list_sizes
+	echo -n "choose size id: "; read size_id
+	list_images
+	echo -n "choose image id: "; read image_id
+	list_regions
+	echo -n "choose region id: "; read region_id
+	list_keys	
+	echo -n "choose key id: "; read key_id
+	echo -n "choose a guest name: "; read guest_name
+	echo -e "\ncreating guest...\n"
+	tugboat create -s $size_id -i $image_id -r $region_id -k $key_id $guest_name
+	sleep 10
+	tugboat wait $guest_name
+}
+
+function halt_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat halt $guest_name
+	sleep 10
+	tugboat wait -s off $guest_name
+}
+
+function start_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat start $guest_name
+	sleep 10
+	tugboat wait $guest_name
+}
+
+function restart_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	tugboat restart $guest_name
+	sleep 10
+	tugboat wait $guest_name
+}
+
+function snapshot_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	echo -n "enter snapshot name: "; read snap_name	
+	tugboat snapshot $snap_name $guest_name
+	sleep 10
+	tugboat wait $guest_name
+}
+
+function wait_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	echo -n "enter state (active,off): "; read state
+	tugboat wait -s $state $guest_name
+}
+
+function snap_destroy_guest() {
+	list_guests
+	echo -n "enter guest name: "; read guest_name	
+	echo -n "enter snapshot name: "; read snap_name	
+	tugboat halt $guest_name
+	sleep 10
+	tugboat wait -s off $guest_name
+	sleep 10
+	tugboat snapshot $snap_name $guest_name
+	sleep 10
+	tugboat wait $guest_name
+	sleep 10
+	tugboat destroy $guest_name
+}
+
+function display_menu() {
+	echo -e "\nCLOUD MENU CHOICES"
+	echo "========================================"
+	echo " 1 : Create a guest"
+	echo " 2 : Destroy a guest"
+	echo " 3 : Retrieve a list of your guests"
+	echo " 4 : Shutdown a guest"
+	echo " 5 : Retrieve a list of your images"
+	echo " 6 : Show a guest's information"
+	echo " 7 : Show available SSH keys"
+	echo " 8 : Reset root password"
+	echo " 9 : Show regions"
+	echo "10 : Resize a guest"
+	echo "11 : Restart a guest"
+	echo "12 : Show available guest sizes"
+	echo "13 : Queue a snapshot of the guest"
+	echo "14 : SSH into a guest"
+	echo "15 : Start a guest"
+	echo "16 : Wait for a guest to reach a state"
+	echo "17 : Snapshot and Destroy guest"
+	echo "99 : Exit"
+}
+
+tugboat
+
+display_menu
+while echo -ne "\nenter choice:"; read option; do
+	case $option in
+	1)
+		create_guest
+		;;
+	2)
+		destroy_guest
+		;;
+	3)
+		list_guests
+		;;
+	4)
+		echo ""
+		halt_guest
+		;;
+	5)
+		list_images
+		;;
+	6)
+		list_info
+		;;
+	7)
+		list_keys
+		;;
+	9)
+		list_regions
+		;;
+	11)
+		echo ""
+		restart_guest
+		;;
+	12)
+		list_sizes
+		;;
+	14)
+		echo "retrieving sizes..."
+		ssh_guest
+		;;
+	13)
+		snapshot_guest
+		;;
+	15)
+		start_guest
+		;;
+	16)
+		wait_guest
+		;;
+	17)
+		snap_destroy_guest
+		;;
+	99)
+		exit
+		;;
+	*)
+		display_menu
+		;;
+	esac
+done

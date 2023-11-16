@@ -1,0 +1,8 @@
+#!/bin/bash
+
+pids=`ps -ef | grep "mencoder" | grep -v grep | awk '{ print $2 }'; ps -ef | grep "PMS" | grep -v grep | awk '{ print $2 }'`
+
+for pid in $pids; do
+	echo renice $pid...
+	renice -19 $pid
+done

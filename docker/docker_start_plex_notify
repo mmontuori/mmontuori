@@ -1,0 +1,25 @@
+#!/bin/sh
+
+LOG_FILE="/var/log/cron.log"
+LOG_LEVEL="6"
+CRONTAB_FILE="/tmp/crontab_root.txt"
+
+cd /
+
+function setup_cron {
+	crontab -l > ${CRONTAB_FILE}
+	echo "00 3 * * * /usr/local/bin/python3 /scripts/plex_notify.py" >> ${CRONTAB_FILE}
+	crontab ${CRONTAB_FILE}
+}
+
+if [ "$1" == "stdout" ]; then
+	setup_cron
+	crond -l ${LOG_LEVEL} -d ${LOG_LEVEL} -L ${LOG_FILE}
+else
+	setup_cron
+	crond -l ${LOG_LEVEL} -d ${LOG_LEVEL} -L ${LOG_FILE}
+fi
+
+sleep 2
+
+tail -f /var/log/cron.log

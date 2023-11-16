@@ -1,0 +1,6 @@
+#/bin/sh
+
+# Transmission ports
+iptables -I INPUT -p tcp --destination-port 51413 -j ACCEPT
+iptables -I INPUT -p udp --destination-port 51413 -j ACCEPT
+

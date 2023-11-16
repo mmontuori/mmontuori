@@ -1,0 +1,18 @@
+.cache
+.config
+.local
+.mozilla
+.bash_history
+.bash_logout
+.dbus
+.esd_auth
+.gnome
+.gnupg
+.java
+.lesshst
+.sane
+.viminfo
+.Xauthority
+.ICEauthority
+VirtualBox VMs
+vmware

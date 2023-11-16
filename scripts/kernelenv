@@ -1,0 +1,31 @@
+#!/bin/bash
+
+export ARCH=arm
+export SUBARCH=arm
+
+if [ "$1" == "" ]; then
+	echo "Using ubuntu toolchain..."
+	#export CROSS_COMPILE=arm-linux-androideabi-
+	export CROSS_COMPILE=arm-linux-gnueabi-
+elif [ "$1" == "4.6" ]; then
+	# CM 10.1
+	echo "Using Linaro 4.6 toolchain..."
+	export PATH=/home/michael/git_repos/linaro-4.6/bin:$PATH
+	export CROSS_COMPILE=arm-eabi-
+elif [ "$1" == "4.7" ]; then
+	# Linaro 4.7
+	echo "Using Linaro 4.7 toolchain..."
+	export PATH=/home/michael/git_repos/linaro-4.6/bin:$PATH
+	export CROSS_COMPILE=arm-eabi-
+elif [ "$1" == "4.4" ]; then
+	echo "Using Google 4.4 toolchain..."
+	export PATH=~/android/toolchain/arm-eabi-4.4.3/bin:$PATH
+	export CROSS_COMPILE=arm-eabi-
+fi
+	
+# CM9
+# export PATH=~/android/mrom-ics/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin:$PATH
+# export CROSS_COMPILE=arm-eabi-
+
+export LINUXSRCDIR=`pwd`
+

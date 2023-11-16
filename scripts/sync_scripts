@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+local_dir=~/bin
+
+scp root@192.168.1.14:/usr/local/bin/* $local_dir
+scp michael@192.168.1.1:~/* $local_dir
+

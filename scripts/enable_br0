@@ -1,0 +1,47 @@
+#!/bin/bash
+
+base_dir="/tmp/brmode"
+dst_dir="/tmp/network-scripts"
+br_files="ifcfg-br0 ifcfg-eth0"
+eth_files="ifcfg-eth0"
+wait_time=20
+
+if ! test -d $base_dir; then
+	echo "ERROR: $base_dir not found!!!"
+	exit 1
+fi
+if ! test -d $dst_dir; then
+	echo "ERROR: $dst_dir not found!!!"
+	exit 1
+fi
+
+cd $dst_dir
+for eth_file in $eth_files; do
+	echo "backing up $eth_file..."
+	cp $eth_file ${base_dir}/${eth_file}.backup
+done
+
+cd $base_dir
+for br_file in $br_files; do
+	echo "implementing bridge file $br_file..."
+	cp $br_file ${dst_dir}/${br_file}
+done
+
+# restart network here
+
+echo "waiting $wait_time seconds before undoing bridge..."
+sleep $wait_time
+
+cd $dst_dir
+for br_file in $br_files; do
+	echo "undoing bridge file $br_file..."
+	rm $br_file
+done
+
+cd $base_dir
+for eth_file in $eth_files; do
+	echo "restiring backup $eth_file.backup.."
+	cp ${eth_file}.backup ${dst_dir}/${eth_file}
+done
+
+#restart network here

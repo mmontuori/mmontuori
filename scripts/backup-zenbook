@@ -1,0 +1,20 @@
+#!/bin/bash
+
+BACK_DIR=/share/Backup
+BACK_SRV="192.168.1.14"
+BACK_USER="root"
+EXCLUDE_FILE=/home/michael/git-repos/mmontuori/etc/backup.exclude
+
+if ! which rsync>/dev/null 2>&1; then
+	echo "rsync utility not found!!!"
+	exit
+fi
+
+back_dest=`hostname`
+
+echo "backing up files to ${BACK_USER}@${BACK_SRV}:${BACK_DIR}/${back_dest}..."
+
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /etc ${BACK_USER}@${BACK_SRV}:${BACK_DIR}/${back_dest}/ --delete-excluded
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /home ${BACK_USER}@${BACK_SRV}:${BACK_DIR}/${back_dest}/ --delete-excluded
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /usr/local ${BACK_USER}@${BACK_SRV}:${BACK_DIR}/${back_dest}/ --delete-excluded
+

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+source mfuncs
+
+if [ "${USER}" != "root" ]; then
+	echo "this program must be executed with root permissions"
+	exit
+fi
+
+OS=`get_os`
+
+if [ "$OS" == "centos" ]; then
+	echo "installing xrdp on centos"
+	yum install epel-release
+	yum -y update
+	yum install xrdp tigervnc-server
+	systemctl enable xrdp
+	systemctl start xrdp
+	firewall-cmd --permanent --zone=public --add-port=3389/tcp
+	firewall-cmd --reload
+elif [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+	echo "installing xrdp on debian"
+fi

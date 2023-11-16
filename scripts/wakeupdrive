@@ -1,0 +1,43 @@
+#!/bin/sh -e
+# 
+### BEGIN INIT INFO
+# Provides:          smartmontools
+# Required-Start:    $syslog $remote_fs
+# Required-Stop:     $syslog $remote_fs
+# Default-Start:     0 6
+# Default-Stop:      1
+# Short-Description: SMART monitoring daemon
+### END INIT INFO
+
+putwake()
+{
+	smartctl -s standby,off /dev/sdf
+}
+
+putsleep()
+{
+	smartctl -s standby,now /dev/sdf
+	sleep 5
+}
+
+case "$1" in
+  start)
+	logger "putting USB hard drive in wake (start)"
+	putwake
+	;;
+  stop)
+	logger "putting USB hard drive in wake (stop)"
+	putwake
+	;;
+  wake)
+	putwake
+	;;
+  sleep)
+	putsleep
+	;;
+  *)
+	echo "Usage: /etc/init.d/smartmontools {start|stop|wake|sleep}"
+	exit 1
+esac
+
+exit $RET

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+/jffs/scripts/addcrontabs
+/jffs/scripts/ddns
+
+export PATH=$PATH:/tmp/mnt/router/scripts

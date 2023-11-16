@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+function process_file() {
+	echo "INFO: processing DTS file ${1}..."
+	ffmpeg -i "${1}" -map 0 -vcodec copy -scodec copy -acodec ac3 -b:a 640k "${2}" > ${3} 2>&1
+	echo "INFO: file ${1} has been processed."
+}
+
+if [ "$1" == "" ]; then
+	echo "ERROR: usage convert_dts_ac3 {video directory}"
+	exit 1
+fi
+
+v_dir="$1"
+conf_dir="${HOME}/.convert_dts_ac3.config"
+
+if ! test -d ${conf_dir}; then
+	echo "creating configuration directory ${conf_dir}..."
+	mkdir "${conf_dir}"
+fi
+if ! test -d ${conf_dir}/processed; then
+	echo "creating processed directory ${conf_dir}/processed..."
+	mkdir "${conf_dir}/processed"
+fi
+
+if test -f "${v_dir}"; then
+	b_name=`basename "${v_dir}" mkv`
+	d_name=`dirname "${v_dir}"`
+	if mediainfo "${v_dir}" | grep DTS | grep -i format >/dev/null; then
+		process_file "${v_dir}" "${d_name}/${b_name}ac3.mkv" "/dev/stdout"
+	else
+		echo "INFO: files ${v_dir} is not DTS"
+	fi
+	exit
+fi
+
+if ! test -d "${v_dir}"; then
+	echo "ERROR: directory ${v_dir} not found. exiting..."
+	exit 1
+fi
+
+mkv_tmp_file=`mktemp`
+
+find "${v_dir}" -name \*.mkv | grep -v "\.ac3\.mkv$" > ${mkv_tmp_file}
+
+cnt_dts=0
+
+while read mkv_file; do
+	echo "INFO: examining file ${mkv_file}..."
+	b_name=`basename "${mkv_file}" mkv`
+	d_name=`dirname "${mkv_file}"`
+	if test -f "${d_name}/${b_name}ac3.mkv"; then
+		echo "INFO: file ${mkv_file} is already processed"
+		continue
+	fi	
+	if mediainfo "${mkv_file}" | grep DTS | grep -i format >/dev/null; then
+		cnt_dts=`expr ${cnt_dts} + 1`
+		process_file "${mkv_file}" "${d_name}/${b_name}ac3.mkv" "/dev/null"
+		if [ "$cnt_dts" == "10" ]; then
+			echo "INFO: LIMIT of 10 REACHED. EXITING"
+			exit 0
+		fi
+	else
+		echo "INFO: files ${mkv_file} is not DTS"
+	fi
+done<${mkv_tmp_file}
+
+rm ${mkv_tmp_file}

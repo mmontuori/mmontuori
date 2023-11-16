@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source mfuncs
+
+if [ "${USER}" != "root" ]; then
+	echo "this program must be executed with root permissions"
+	exit
+fi
+
+OS=`get_os`
+
+if [ "$OS" == "centos" ]; then
+	echo "cleaning up centos..."
+elif [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+	echo "cleaning up ubuntu/debian..."
+	if ! cleaners=`bleachbit -l`; then
+		echo "error executing 'bleachbit'. Make sure it is installed"
+		exit
+	fi
+	bleachbit -c ${cleaners}
+fi

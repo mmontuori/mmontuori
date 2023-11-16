@@ -1,0 +1,16 @@
+#!/bin/bash
+
+system_url="https://dl.ui.com/firmwares/edgemax/v1.10.11/ER-e50.v1.10.11.5274269.tar"
+
+echo -n "delete backup system image..."
+echo -n "(delete system image)"
+echo "DONE"
+
+echo -n "downloading new system image "
+echo -n "from: ${system_url}..."
+echo -n "add system image ${system_url}"
+echo "DONE"
+
+echo -n "set new system image to boot..."
+echo -n "set system image default-boot"
+echo "DONE"

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source ~/bin/mfuncs
+
+OS=`get_os`
+
+echo "running on ${OS}"
+
+if [ "$SUDO_USER" != "" ]; then
+	MYSQL_USER="$SUDO_USER"
+else
+	MYSQL_USER="$USER"
+fi
+
+if [ "$OS" == "ubuntu" ]; then
+    sudo apt install -y mysql-server
+elif [ "$OS" == "rhel8" ]; then
+    tmp_dir=`mktemp -d`
+    cd $tmp_dir
+    wget https://dev.mysql.com/get/mysql80-community-release-el8-2.noarch.rpm
+    sudo dnf install -y mysql80-community-release-el8-2.noarch.rpm
+    cd $CUR_DIR
+    sudo dnf install -y --nobest mysql-server mysql-workbench-community
+fi
+
+sudo systemctl start mysqld
+sudo mysql_secure_installation
+sudo systemctl restart mysqld
+
+echo "UNINSTALL COMPONENT 'file://component_validate_password';" | sudo mysql --password=passw0rd
+echo "FLUSH PRIVILEGES;" | sudo mysql --password=passw0rd
+echo "CREATE USER 'michael'@'%' IDENTIFIED BY 'passw0rd';" | sudo mysql --password=passw0rd
+echo "GRANT ALL PRIVILEGES ON *.* TO 'michael'@'%';" | sudo mysql --password=passw0rd
+echo "FLUSH PRIVILEGES;" | sudo mysql --password=passw0rd
+sudo systemctl restart mysqld

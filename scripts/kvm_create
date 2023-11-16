@@ -1,0 +1,14 @@
+#!/bin/bash
+
+virt-install -d \
+   --name=cent7 \
+   --file=/var/lib/libvirt/images/cent7.dsk \
+   --file-size=8 \
+   --nonsparse \
+   --nographics \
+   --extra-args='console=ttyS0' \
+   --vcpus=2 --ram=2048 \
+   --location=http://mirror.centos.org/centos/7/os/x86_64/ \
+   --network bridge=virbr0 \
+   --os-type=linux \
+   --os-variant=rhel7

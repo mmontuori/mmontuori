@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rsync -avzhP --append /mnt/usb-drive/Videos/ /mnt/storage/media-library/video/
+rsync -avzhP --append /mnt/usb-drive/Wii /mnt/storage/
+rsync -avzhP --append /mnt/usb-drive/c /mnt/storage/

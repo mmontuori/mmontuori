@@ -1,0 +1,36 @@
+#!/bin/bash
+
+source mfuncs
+
+OS=`get_os`
+
+echo "update $OS"
+
+if [ "$1" == "clean" ]; then
+	if [ "$OS" == "centos" ]; then
+		sudo yum -y autoremove
+	elif [ "$OS" == "centos8" ]; then
+		sudo dnf -y autoremove
+	elif [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+		sudo apt autoremove -y
+		# to update OS sudo do-release-upgrade -d
+	elif [ "$OS" == "rhel8" ]; then
+		sudo dnf -y autoremove
+		sudo dnf -y remove --oldinstallonly
+	fi
+elif [ "$1" == "--help" ]; then
+	echo "usage: update_os [clean]"
+	exit
+else
+	if [ "$OS" == "centos" ]; then
+		sudo yum -y update
+	elif [ "$OS" == "centos8" ]; then
+		sudo dnf -y update
+	elif [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+		sudo apt update
+		sudo apt upgrade -y
+		# to update OS sudo do-release-upgrade -d
+	elif [ "$OS" == "rhel8" ]; then
+		sudo dnf -y update
+	fi
+fi

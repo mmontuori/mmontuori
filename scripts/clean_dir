@@ -1,0 +1,80 @@
+#!/bin/bash
+
+while getopts "a:d:te" arg; do
+  case $arg in
+    d)
+      dir=$OPTARG
+      ;;
+    a)
+      age=$OPTARG
+      ;;
+    t)
+      testmode="true"
+      ;;
+    e)
+      purge_empty="true"
+      ;;
+    *)
+      echo "usage: clean_dir {-d directory} {-a age in days} [-e]"
+      exit
+      ;;
+  esac
+done
+
+if [ "$age" == "" ]; then
+	echo "ERROR: age -a must be specified"
+	exit
+fi
+if [ "$dir" == "" ]; then
+	echo "ERROR: age -d must be specified"
+	exit
+fi
+if [ "$testmode" == "true" ]; then
+	echo "running in test mode"
+fi
+
+echo "cleaning directory $dir for files older then $age days..."
+
+if ! test -d "$dir"; then
+	echo "ERROR: directory $dir not found, cannot continue!!!"
+	exit
+fi
+
+tmp_file=`mktemp`
+
+echo -n "analizyng files to purge..."
+find "$dir" -type f -mtime +${age} > $tmp_file
+echo "done"
+cnt=`cat "$tmp_file" | wc -l`
+echo "found $cnt files"
+
+echo "beginning file cleanup phase..."
+while read file; do
+	echo -n "cleaning file $file..."
+	if [ "$testmode" == "true" ]; then
+		echo "DRY RUN NO DELETE"
+	else
+		if rm "$file">/dev/null 2>&1; then
+			echo "done"
+		else
+			echo "ERROR"
+		fi
+	fi
+done<$tmp_file
+echo "file cleanup phase ended"
+
+if [ "$purge_empty" == "true" ]; then
+	echo "analyzing for empty directories to purge..."
+	find "$dir" -type d > $tmp_file
+	echo "done"
+	tac $tmp_file > ${tmp_file}-rev
+	while read dir_to_clean; do
+		echo -n "cleaning directory $dir_to_clean..."
+		if [ "$testmode" == "true" ]; then
+			echo "DRY RUN NO DELETE"
+		else
+			echo "TBD"
+		fi
+	done<${tmp_file}-rev
+fi
+

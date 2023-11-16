@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if ! test -d ~/git-repos; then
+	mkdir ~/git-repos
+fi
+
+cd ~/git-repos
+
+if ! test -d ~/git-repos/NapoliSupporters; then
+	git clone git@gitlab.com:mmontuori/NapoliSupporters.git
+else
+	cd NapoliSupporters
+	git pull
+fi
+
+
+

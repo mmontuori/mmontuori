@@ -1,0 +1,36 @@
+#!/bin/bash
+
+BACK_DIR=/mnt/backup
+EXCLUDE_FILE=/home/michael/git-repos/mmontuori/etc/backup.exclude
+
+if ! mount | grep nfs | grep Backup>/dev/null; then
+	echo "NFS Backup volume not mounted!!!"
+	exit
+fi
+
+if ! which rsync>/dev/null 2>&1; then
+	echo "rsync utility not found!!!"
+	exit
+fi
+
+if ! test -d ${BACK_DIR}; then
+	echo "${BACK_DIR} not found!!!"
+	exit
+fi
+
+back_dest=`hostname`
+
+echo "backing up files to ${BACK_DIR}/${back_dest}..."
+
+if ! test -d ${BACK_DIR}/${back_dest}; then
+	echo "creaeting backup directory..."
+	if ! mkdir ${BACK_DIR}/${back_dest}; then
+		echo "ERROR could not create backup directory!!!"
+		exit
+	fi
+fi
+
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /etc ${BACK_DIR}/${back_dest}/ --delete-excluded
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /home ${BACK_DIR}/${back_dest}/ --delete-excluded
+rsync --links --exclude-from ${EXCLUDE_FILE} -avzhP /usr/local ${BACK_DIR}/${back_dest}/ --delete-excluded
+

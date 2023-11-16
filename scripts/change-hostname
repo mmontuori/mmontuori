@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function usage {
+	echo "usage: change-hostname {hostname}"
+}
+
+if [ "$1" == "" ]; then
+	usage
+	exit
+fi
+
+current_hostname=`hostname`
+new_hostname=$1
+
+echo current hostname: $current_hostname
+echo new hostname: $new_hostname
+
+if ! sed -i "s/$current_hostname/$new_hostname/g" /etc/hosts; then
+	echo "ERROR changing /hosts/file"	
+	exit
+fi
+if ! hostname $new_hostname; then
+	echo "ERROR setting hostname"
+	exit
+fi
+if ! echo $new_hostname > /etc/hostname; then
+	echo "ERROR setting /etc/hostname"
+	exit
+fi

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+function usage {
+    echo "usage: `basename $0` {OPTIONS}"
+    echo "    -f {from e-mail}"
+    echo "    -t {to e-mail}"
+    echo "    -s {subject}"
+    echo "    -c {content}"
+    echo "    -? help"
+}
+
+from_address="$USER@localhost"
+to_address=""
+subject=""
+content=""
+
+while getopts ":f:t:s:c:" opt; do
+case $opt in
+    f)
+        from_address=$OPTARG
+        ;;
+    t)
+        to_address=$OPTARG
+        ;;
+    s)
+        subject=$OPTARG
+        ;;
+    c)
+        content=$OPTARG
+        ;;
+    *)
+        usage
+        exit
+        ;;
+esac
+done
+
+if [ "$to_address" == "" ]; then
+    echo "-t option cannot be empty"
+    usage
+    exit 1
+fi
+
+if [ "$subject" == "" ]; then
+    echo "-s option cannot be empty"
+    usage
+    exit 1
+fi
+
+if [ "$content" == "" ]; then
+    echo "-c option cannot be empty"
+    usage
+    exit 1
+fi
+
+echo "from: $from_address"
+echo "to: $to_address"
+echo "subject: $subject"
+echo "content: $content"
+
+
+tmpfile=`mktemp`
+echo "From: $from_address" >> $tmpfile
+echo "To: $to_address" >> $tmpfile
+echo "Subject: $subject" >> $tmpfile
+echo "$content" >> $tmpfile
+cat $tmpfile | msmtp -a gmail $to_address
+rm $tmpfile

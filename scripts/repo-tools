@@ -1,0 +1,71 @@
+#!/bin/bash
+
+function usage {
+	echo "usage: repo-tools [options]"
+	echo " -o operation"
+	echo " -l list"
+	echo " -m manifest"
+	echo " -r regexp"
+	echo " -s status"
+}
+
+while getopts "o:lhm:sr:" opt; do
+  case $opt in
+    o)
+      git_op=$OPTARG
+      ;;
+    l)
+      repo_list=true
+      ;;
+    m)
+      repo_manifest=$OPTARG
+      ;;
+    r)
+      regexp=$OPTARG
+      ;;
+    h)
+      usage
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG"
+      ;;
+  esac
+done
+
+if ! test -f $repo_manifest; then
+	echo "manifest $repo_manifest not found"
+	exit
+fi
+
+if [ "$repo_manifest" == "" ];then
+	echo "manifest is empty"
+	usage
+	exit
+fi
+
+if [ "$regexp" == "" ];then
+	echo "regexp is empty"
+	usage
+	exit
+fi
+
+repos=`cat $repo_manifest | grep "<project" | grep "$regexp"`
+
+for repo in $repos; do
+	if echo $repo | grep "name=">/dev/null; then
+		dir=`echo "$repo" | sed s/\"//g | awk -F= '{ print $2 }'`
+		if ! test -d $dir; then
+			echo "repo: $dir does not exists"
+			continue
+		fi
+		if [ "$repo_list" == "true" ]; then
+			cat $repo_manifest | grep "$repo"
+			continue
+		fi
+		echo -e "\nrepo: $dir, git operation: $git_op"
+		cd $dir
+		git $git_op
+		cd ..
+	fi
+done
+

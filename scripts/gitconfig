@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo "configuring user.email -> michael.montuori@gmail.com..."
+git config --global user.email "michael.montuori@gmail.com"
+echo "configuring user.name -> mmontuori..."
+git config --global user.name "mmontuori"
+

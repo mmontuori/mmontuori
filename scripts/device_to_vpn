@@ -1,0 +1,49 @@
+#!/bin/vbash
+
+if [ "$1" == "" ] || [ "$2" == "" ]; then
+	echo "ERROR: usage add_device_to_vpn {-a|-d} {host}"
+	exit
+fi
+
+export ip_addr=`dig +short $2`
+
+echo "adding ${2}->${ip_addr} to VPN..."
+
+# Set up the Vyatta environment
+source /opt/vyatta/etc/functions/script-template
+OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
+CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
+API=/bin/cli-shell-api
+shopt -s expand_aliases
+
+alias AddImage='${OPRUN} add system image'
+alias begin='${CFGRUN} begin'
+alias cleanup='${CFGRUN} cleanup'
+alias comment='${CFGRUN} comment'
+alias commit='${CFGRUN} commit'
+alias copy='${CFGRUN} copy'
+alias delete='${CFGRUN} delete'
+alias discard='${CFGRUN} discard'
+alias end='${CFGRUN} end'
+alias load='${CFGRUN} load'
+alias rename='${CFGRUN} rename'
+alias save='${CFGRUN} save'
+alias set='${CFGRUN} set'
+alias show='${API} showConfig'
+alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
+alias version='${OPRUN} show version'
+
+session_env=$($API getSessionEnv $$)
+eval $session_env
+$API setupSession
+$API inSession
+if [ $? -ne 0 ]; then
+   echo "Something went wrong!"
+fi
+if [ "$1" == "-a" ]; then
+	set firewall group address-group vpn_devices address $ip_addr
+else
+	delete firewall group address-group vpn_devices address $ip_addr
+fi
+commit
+$API teardownSession

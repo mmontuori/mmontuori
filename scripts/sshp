@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+	echo "usage: sshp [user@]{server}"
+	exit
+fi
+
+ssh -o ProxyCommand="nc -X 5 -x localhost:1091 %h %p" ${1}

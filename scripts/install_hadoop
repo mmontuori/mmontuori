@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# following the information from https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
+
+source ~/bin/mfuncs
+
+OS=`get_os`
+
+function download_hadoop {
+	wget https://dlcdn.apache.org/hadoop/common/hadoop-3.3.1/hadoop-3.3.1-aarch64.tar.gz
+}
+
+if [ "$USER" != "root" ] && [ "$USER" != "hadoop" ]; then
+	echo "this utility can only be executed from root or hadoop"
+	exit 1
+fi
+
+echo "running on ${OS}"
+
+if [ "$USER" == "root" ]; then
+	echo "running the root portion"
+	sudo apt -y install openjdk-11-jdk
+	sudo adduser hadoop
+	
+	echo "now run the same script under the hadoop user"
+fi
+
+if [ "$USER" == "hadoop" ]; then
+	echo "running the hadoop portion"
+	download_hadoop
+fi
+

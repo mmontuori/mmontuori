@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source /home/opc/set_oci_env
+
+OCI_CLI_RC_FILE=/home/michael_mo/.oci/config
+OCI_TENANCY="ocid1.tenancy.oc1..aaaaaaaaht2h6ch35hdiy7actprp5xziol622yjov4g437yofrt34qem7mva"
+OCI_DOMAIN="rAOo:US-ASHBURN-AD-2"
+OCI_SUBNET="ocid1.subnet.oc1.iad.aaaaaaaaadwcapvsutkb3zdxvxfmeiowpko36qkmx5jzythegr753bmfpava"
+OCI_IMAGE="ocid1.image.oc1.iad.aaaaaaaalwr5atko6n7ia2pz5q2s5soy6ad6paujwqslgeqmrgyy4hnqoilq"
+
+oci compute instance launch \
+ --display-name minecraft-server \
+ --availability-domain $OCI_DOMAIN \
+ --compartment-id $OCI_TENANCY \
+ --shape VM.Standard.A1.Flex \
+ --subnet-id $OCI_SUBNET \
+ --assign-private-dns-record true \
+ --assign-public-ip false \
+ --availability-config file:///home/opc/availabilityConfig.json \
+ --image-id $OCI_IMAGE \
+ --instance-options file:///home/opc/instanceOptions.json \
+ --shape-config file:///home/opc/shapeConfig.json \
+ --ssh-authorized-keys-file /home/opc/.ssh/oracle_cloud.pub
+

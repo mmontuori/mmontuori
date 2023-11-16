@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+function usage() {
+	echo "`basename $0` {repo name} [user name]"
+	echo "    repo name = the repository to clone"
+	echo "    user name = user name to use (default: mmontuori)"
+}
+
+if [ "$1" == '' ]; then
+	usage
+	exit 1
+fi
+
+if [ "$2" == "" ]; then
+	USERNAME="mmontuori"
+else
+	USERNAME="$2"
+fi
+
+git clone git@gitlab.com:${USERNAME}/${1}.git

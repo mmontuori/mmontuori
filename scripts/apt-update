@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if apt-get update -y; then
+	apt-get upgrade -y
+fi

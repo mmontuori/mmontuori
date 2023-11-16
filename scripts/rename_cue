@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cue_file="$1"
+
+track_no="0"
+
+while read line; do
+	if echo $line | grep -i track>/dev/null; then
+		echo "found track line $line"
+		track_no=`echo $line | awk '{ print $2 }'`
+	fi
+	if echo $line | grep -i title>/dev/null; then
+		echo "found track $track_no title $line"
+		title=`echo "$line" | sed 's/TITLE //' | sed 's/\"//g'`
+		echo "title: $title"
+		if [ "$track_no" == "0" ]; then
+			album_title="$title"
+		fi
+		#echo "mv split-track${track_no}.flac ${album_title}-${track_no}-${title}.flac"
+		echo "mv split-track${track_no}.flac"
+	fi
+done<$cue_file

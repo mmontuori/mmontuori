@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cmd_out=`repo list | awk -F\: '{ print $1 }'`
+
+cur_dir=`pwd`
+
+for repo in $cmd_out; do
+	if cd $repo; then
+		commits=`git log --since=$1 --pretty=oneline`
+		if [ "$commits" != "" ]; then
+			echo repo $repo...
+			echo "$commits"
+			echo "Press 'Enter' to continue."
+			read mmm
+		fi
+		cd $cur_dir
+	fi
+done

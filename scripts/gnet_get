@@ -1,0 +1,41 @@
+#!/bin/bash
+
+server="gnetonline.org"
+ftpuser="mietanza"
+ftppsw="Italian71"
+base_dir="/mnt/storage/media-library/video"
+dst_dir="${base_dir}/tmp"
+
+if [ "$1" == "" ]; then
+	echo "usage: gnet_get {regexp|-ls}"
+	exit
+fi
+
+if [ "$1" == "-ls" ]; then
+	ncftpls -u "$ftpuser" -p "$ftppsw" -i '*.mkv' -x "Rrt" -g ftp://gnetonline.org/$ftpuser
+	exit
+fi
+
+regexp="$1"
+
+ncftpls -u "$ftpuser" -p "$ftppsw" -i '*.mkv' -x "Rrt" -g ftp://gnetonline.org/$ftpuser > /tmp/tmp_gnet_files.txt
+
+while read file; do
+	if ! echo "$file" | grep ".mkv$" > /dev/null 2>&1; then
+		continue
+	fi
+	tmp_file=`basename "$file"`
+	
+	if echo "$file" | grep "$regexp" >/dev/null 2>&1; then
+		#echo "find `dirname $dst_dir` | grep \"$tmp_file\""
+		if ! find `dirname $dst_dir` | grep "$tmp_file">/dev/null 2>&1; then
+			echo "retrieving $tmp_file"
+			ncftpget -B 250000 -u "$ftpuser" -p "$ftppsw" "$server" $dst_dir "/${file}"
+			#ncftpget -u "$ftpuser" -p "$ftppsw" "$server" $dst_dir "/${file}"
+		fi
+	fi
+done</tmp/tmp_gnet_files.txt
+
+rm /tmp/tmp_gnet_files.txt
+
+sudo -i su - plex -c "export LD_LIBRARY_PATH=$plex_dir; cd $plex_dir; $plex_scan_exec"

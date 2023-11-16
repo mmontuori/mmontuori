@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ $1 = "/tmp/mnt/router" ]
+then
+  ln -sf $1/entware /tmp/opt
+fi

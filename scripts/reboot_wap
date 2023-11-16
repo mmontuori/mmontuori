@@ -1,0 +1,5 @@
+#!/bin/bash
+
+( sleep 2; echo "admin"; sleep 1; echo "michele@1"; sleep 2; echo "reboot" ; sleep 120; ) | telnet 192.168.1.83
+
+

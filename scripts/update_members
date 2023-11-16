@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+#
+# api_key: 3a829c3fb15fda1b6f38623a11ba96ae7aa0a386
+# curl -X POST -H "Content-Type: application/json" https://sc-fsc.com/wp-json/newsletter/v1/subscribers/add -d '{"api_key":"test123", "email":"test123@test.com", "status":"S"}'
+# email x a valid email address
+# api_key x the string set on the API configuration panel
+# name	subscriber name
+# surname subscriber surname
+# gender subscriber gender
+# profile_x additional profile field value
+# status C subscription status S = Not Confirmed C = Confirmed
+#
+# Column names are Last, First, M/F, USFS, US Citizen, DOB, Phone, Cell, Email, Email2, Addr, Addr2, City, State, Zip, Membership, Status, Expires
+
+import csv
+import requests
+import json
+
+csv_file="MemberData.csv"
+api_url="https://sc-fsc.com/wp-json/newsletter/v1/subscribers/add"
+api_key="3a829c3fb15fda1b6f38623a11ba96ae7aa0a386"
+
+def read_csv():
+    print('reading csv file ' + csv_file + '...')
+    f=open(csv_file)
+    rows = csv.reader(f, delimiter=',')
+    return rows
+
+def build_api_records(csv_rows):
+    api_records={}
+    line_count = 0
+    for row in csv_rows:
+        if line_count == 0:
+            #print(f'Column names are {", ".join(row)}')
+            line_count += 1
+        else:
+            #print(f'\t{row[8], row[9]}')
+            last_name=row[0]
+            first_name=row[1]
+            gender=row[2]
+            email1=row[8]
+            email2=row[9]
+            if email1 != "":
+                #print("first_name:"+first_name+", last_name:"+last_name+", gender:"+gender+", email1:"+email1+", email2:"+email2)
+                api_values={}
+                api_values['api_key']=api_key
+                api_values['email']=email1
+                api_values['name']=first_name
+                api_values['surname']=last_name
+                api_values['gender']=gender
+                api_values['status']="C"
+                api_records[email1]=api_values
+            if email2 != "":
+                #print("mail2 is NOT EMPTY")
+                api_values={}
+                api_values['api_key']=api_key
+                api_values['email']=email2
+                api_values['name']=first_name
+                api_values['surname']=last_name
+                api_values['gender']=gender
+                api_values['status']="C"
+                api_records[email2]=api_values
+            line_count += 1
+    print(f'Processed {line_count} lines.')
+
+    print("length: " + str(len(api_records)))
+    return api_records
+
+def post_to_api(api_records):
+    for api_record in api_records:
+        #print(api_records[api_record])
+        #print(json.dumps(api_records[api_record]))
+        print("posting: " + json.dumps(api_records[api_record]))
+        x = requests.post(api_url, json = api_records[api_record])
+        print("response: " + x.text)
+
+rows=read_csv()
+
+api_records=build_api_records(rows)
+
+post_to_api(api_records)

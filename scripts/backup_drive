@@ -1,0 +1,9 @@
+#!/bin/bash
+
+rsync -a -v /home/michael/copy/bin root@storage:/share/Backup/gdrive/montuori64/
+rsync -a -v /home/michael/copy/Documents root@storage:/share/Backup/gdrive/montuori64/
+rsync -a -v /home/michael/copy/Image\ Repository root@storage:/share/Backup/gdrive/montuori64/
+#rsync -a -v /home/michael/copy/PhotoCopy root@storage:/share/Backup/gdrive/montuori64/
+#rsync -a -v /home/michael/copy/Pictures root@storage:/share/Backup/gdrive/montuori64/
+#rsync -a -v /home/michael/copy/Pictures\ -\ MB860 root@storage:/share/Backup/gdrive/montuori64/
+#rsync -a -v /home/michael/copy/Pictures\ -\ SAMSUNG-SGH-I747 root@storage:/share/Backup/gdrive/montuori64/

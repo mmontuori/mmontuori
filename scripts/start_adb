@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PATH=$PATH:~/android/android-sdk-linux/platform-tools
+sudo $HOME/android/android-sdk-linux/platform-tools/adb kill-server
+sudo $HOME/android/android-sdk-linux/platform-tools/adb start-server

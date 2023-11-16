@@ -1,0 +1,16 @@
+#!/bin/bash
+
+function usage {
+        echo "usage: `basename $0` {domain}"
+}
+
+if [ "$1" == "" ]; then
+        usage
+        exit
+fi
+
+domain=$1
+
+mac_address=`virsh -c qemu:///system "dumpxml $domain" | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'`
+
+cat /var/lib/libvirt/dnsmasq/default.leases | grep "$mac_address" | awk '{ print $3 }'

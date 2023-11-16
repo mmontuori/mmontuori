@@ -1,0 +1,37 @@
+#!/bin/bash
+
+sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev php5-dev php5-cli build-essential checkinstall python-dev apache2 apache2-mpm-prefork apache2-utils apache2.2-common libapache2-mod-php5
+pkg-config g++
+
+if ! test -f thrift-0.8.0.tar.gz; then
+	wget https://dist.apache.org/repos/dist/release/thrift/0.8.0/thrift-0.8.0.tar.gz
+fi
+
+tar xvfz thrift-0.8.0.tar.gz
+
+cd thrift-0.8.0
+./configure --without-cpp --without-python
+make
+make install
+
+cd ..
+
+if ! test -f apache-cassandra-1.1.12-bin.tar.gz; then
+	wget http://mirror.metrocast.net/apache/cassandra/1.1.12/apache-cassandra-1.1.12-bin.tar.gz
+fi
+tar xvfz apache-cassandra-1.1.12-bin.tar.gz
+cd apache-cassandra-1.1.12
+
+cd ../thrift-0.8.0/
+./compiler/cpp/thrift -gen php ../apache-cassandra-1.1.12/interface/cassandra.thrift
+
+sudo mkdir -p /usr/share/php/Thrift
+sudo cp -R gen-php/ /usr/share/php/Thrift/packages/
+sudo cp -R lib/php/src/* /usr/share/php/Thrift/
+
+cd lib/php/src/ext/thrift_protocol
+./configure --enable-thrift_protocol
+make
+sudo cp modules/thrift_protocol.so /usr/lib/php5/20??????/
+
+echo "extension=thrift_protocol.so" > /etc/php5/conf.d/thrift_protocol.ini

@@ -1,0 +1,54 @@
+#!/bin/bash
+
+source mfuncs
+
+OS=`get_os`
+tarfile="/tmp/pycharm.tgz"
+dest_dir="/opt/pycharm"
+
+echo "installing pycharm on $OS"
+
+if [ "$USER" != "root" ]; then
+	echo "ERROR: program needs to be executed from root"
+	exit 1
+fi
+
+if ! test -f ${tarfile}; then
+	wget 'https://data.services.jetbrains.com/products/download?code=PCC&platform=linux' -O ${tarfile}
+fi
+
+if test -d ${dest_dir}; then
+	if ! rm -fr ${dest_dir}; then
+		echo "ERROR cannot remove ${dest_dir}"
+		exit
+	fi
+fi
+
+if ! test -d ${dest_dir}; then
+	if ! mkdir -p ${dest_dir}; then
+		echo "ERROR cannot create ${dest_dir}"
+		exit
+	fi
+fi
+
+cd ${dest_dir}
+tar xfz ${tarfile}
+
+version_dir=`ls -trd py* | tail -1`
+
+if test -h ${dest_dir}/current; then
+	if ! rm ${dest_dir}/current; then
+		echo "ERROR cannot remove ${dest_dir}/current"
+		exit
+	fi
+fi
+
+if ! ln -s ${dest_dir}/${version_dir} ${dest_dir}/current; then
+	echo "ERROR cannot create symlink with current version"
+	exit
+fi
+
+if test -f ${tarfile}; then
+	rm ${tarfile}
+fi
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+function help {
+	echo "usage: split_flac {cue file} {flac file} {format=flac|mp3}"
+}
+
+if [ "$1" == "" ] ||
+   [ "$2" == "" ] ||
+   [ "$3" == "" ]; then
+	help
+	exit
+fi
+
+cuebreakpoints $1 | shnsplit -o $3 $2

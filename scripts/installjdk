@@ -1,0 +1,49 @@
+#!/bin/bash
+
+function usage {
+	echo "usage: `basename $0` {jdk file}"
+}
+
+if [ "$1" == "" ]; then
+	usage
+	exit
+fi
+
+jdk_file=$1
+
+if ! test -f $jdk_file; then
+	echo "file $jdk_file not found"
+	exit
+fi
+
+cd /tmp
+
+if ! test -d; then
+	mkdir tmp_jdk
+fi
+
+cd tmp_jdk
+
+echo -n "extracting $jdk_file..."
+tar xfz $jdk_file
+echo done
+
+if ! test -d /usr/lib/jvm; then
+	mkdir /usr/lib/jvm
+fi
+
+jdk_dir=`ls`
+
+echo "installing $jdk_dir..."
+
+if ! mv $jdk_dir /usr/lib/jvm; then
+	echo "error moving $jdk_dir /usr/lib/jvm"
+	exit
+fi
+
+echo -n "configuring default java alternative..."
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/$jdk_dir/bin/java 0
+echo "done"
+
+cd ..
+rmdir tmp_jdk

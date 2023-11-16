@@ -1,0 +1,45 @@
+# Include file
+
+# Backup directory
+/share/Backup/italia-phone, backup
+/share/Backup/italia-tablet, backup
+/share/Backup/italia-iphone, backup
+#/share/Backup/pujieblack, backup
+/share/Backup/meke-tablet, backup
+/share/Backup/Genealogy Tree, backup
+/share/Backup/montuori64, backup
+#/share/Backup/rsnapshot, backup
+/share/Backup/italia-laptop, backup
+/share/Backup/v10_backup, backup
+/share/Backup/meke-phone, backup
+/share/Backup/meke-laptop, backup
+#/share/Backup/spectre, backup
+/share/Backup/domanicolor, backup
+/share/Backup/ssh_keys, backup
+/share/Backup/italia-pixel2, backup
+/share/Backup/xoom, backup
+/share/Backup/michael-phone, backup
+/share/Backup/michael-laptop, backup
+/share/Backup/zenbook, backup
+/share/Backup/tftp, backup
+/share/Backup/Kodak Play Sport, backup
+/share/Backup/video-camera, backup
+/share/Backup/papa, backup
+/share/Backup/vault, backup
+
+# Public directory
+/share/Public/Italia, public
+/share/Public/Wii, public
+/share/Public/books, public
+/share/Public/documents, public
+/share/Public/domanicolor, public
+/share/Public/games, public
+/share/Public/music, public
+/share/Public/pictures, public
+/share/Public/video, public
+/share/Public/wedding, public
+
+# Movies Must Keep
+/share/Public/media-library/video/Movies/Must Keep, public
+/share/Public/media-library/video/Movies/Kids Must Keep, public
+/share/Public/media-library/video/Movies/Italian Must Keep, public

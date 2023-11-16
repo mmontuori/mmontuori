@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function usage
+{
+	echo "usage: `basename $0` {INPUT VIDEO} {VOLUME 256=0} {OUTPUT VIDEO}"
+}
+
+if [ "$1" == "" ]; then
+    echo "missing INPUT VIDEO"
+    usage
+    exit
+fi
+
+if [ "$2" == "" ]; then
+    echo "missing VOLUME"
+    usage
+    exit
+fi
+
+if [ "$3" == "" ]; then
+    echo "missing OUTPUT VIDEO"
+    usage
+    exit
+fi
+
+ffmpeg -i "$1" -vol $2 -vcodec copy "$3"

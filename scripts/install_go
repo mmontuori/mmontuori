@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source mfuncs
+
+if ! is_root; then
+	echo "ERROR: the program must be launched as root"
+	exit 1
+fi
+
+echo "installing go..."
+
+tmp_dir=`mktemp -d`
+file="go1.11.linux-amd64.tar.gz"
+
+echo "using temporary directory ${tmp_dir}"
+
+cd $tmp_dir
+
+wget https://dl.google.com/go/${file}
+
+cd /usr/local
+
+sudo tar xvfz /${tmp_dir}/${file}
+
+echo "add the following line to profile or env file"
+echo "export PATH=\$PATH:/usr/local/go/bin"

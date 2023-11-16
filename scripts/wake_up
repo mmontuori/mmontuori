@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+	echo "usage: wake_up {host}"
+	exit
+fi
+
+mac_addr=`cat /etc/hosts | grep "$1" | awk '{ print $4 }'`
+
+echo "$mac_addr"
+
+echo "waking up mac address $mac_addr..."
+sudo /usr/sbin/etherwake -i switch0 -D $mac_addr

@@ -1,0 +1,74 @@
+#/bin/bash
+
+suser=stack
+
+echo -n enter the hostname:
+read hname
+
+if [ "$hname" == "" ]; then
+	echo "exiting"
+	exit
+fi
+
+current_hname=`hostname`
+if [ "$current_hname" != "$hname" ]; then
+	echo "setting hostname to $hname"
+sudo hostname $hname
+sudo -i <<EOF
+echo "$hname" > /etc/hostname
+EOF
+sudo sed -i "s/server-template/$hname/g" /etc/hosts
+echo "Exiting shell, restart the guest and continue with the script"
+exit
+fi
+
+echo -n "enter the github branch ('Enter' for HEAD, stable/havana, etc.):"
+read branch
+
+echo creating user $suser...
+sudo useradd -m -s /bin/bash $suser
+
+sudo -u $suser -i git clone https://github.com/openstack-dev/devstack.git
+if [ "$branch" != "" ]; then
+sudo -u $suser -i <<EOF 
+cd /home/$suser/devstack
+git checkout $branch
+cd /home/$suser
+EOF
+fi
+
+sudo -u $suser -i <<EOF
+echo '[[local|localrc]]' > /home/$suser/devstack/local.conf
+echo 'ENABLED_SERVICES+=,heat,h-api,h-api-cfn,h-api-cw,h-eng' >> /home/$suser/devstack/local.conf
+echo 'ADMIN_PASSWORD=passw0rd' >> /home/$suser/devstack/local.conf
+echo 'DATABASE_PASSWORD=passw0rd' >> /home/$suser/devstack/local.conf
+echo 'RABBIT_PASSWORD=passw0rd' >> /home/$suser/devstack/local.conf
+echo 'SERVICE_PASSWORD=passw0rd' >> /home/$suser/devstack/local.conf
+echo 'SERVICE_TOKEN=a682f596-76f3-11e3-b3b2-e716f9080d50' >> /home/$suser/devstack/local.conf
+echo '#FIXED_RANGE=172.31.1.0/24' >> /home/$suser/devstack/local.conf
+echo '#FLOATING_RANGE=192.168.20.0/25' >> /home/$suser/devstack/local.conf
+echo '#HOST_IP=10.3.4.5' >> /home/$suser/devstack/local.conf
+echo 'disable_service n-net' >> /home/$suser/devstack/local.conf
+echo 'enable_service q-svc' >> /home/$suser/devstack/local.conf
+echo 'enable_service q-agt' >> /home/$suser/devstack/local.conf
+echo 'enable_service q-dhcp' >> /home/$suser/devstack/local.conf
+echo 'enable_service q-l3' >> /home/$suser/devstack/local.conf
+echo 'enable_service q-meta' >> /home/$suser/devstack/local.conf
+echo 'enable_service neutron' >> /home/$suser/devstack/local.conf
+echo 'enable_service tempest' >> /home/$suser/devstack/local.conf
+EOF
+
+sudo -i <<EOF
+echo "$suser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+EOF
+
+echo -n "Continue with stack.sh execution (y/n):"
+read scont
+if [ "$scont" == "n" ]; then
+	exit
+fi
+
+sudo -u $suser -i <<EOF
+cd /home/$suser/devstack
+./stack.sh
+EOF

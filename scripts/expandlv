@@ -1,0 +1,48 @@
+#!/bin/bash
+
+source mfuncs
+
+OS=`get_os`
+
+echo "expanding volume on $OS"
+
+echo -e "d\nw\n" | sudo fdisk /dev/sdb
+sleep 1
+echo -e "n\np\n\n\n\nt\n8e\nw\n" | sudo fdisk /dev/sdb
+sleep 1
+sudo pvcreate /dev/sdb1
+sleep 1
+
+vg_name=`sudo lvdisplay | grep "VG Name" | head -1 | awk '{ print $3 }'`
+
+echo "VG Name: ${vg_name}."
+
+if [ "$OS" == "centos" ]; then
+	vgname=`sudo vgdisplay  | grep "VG Name" | awk '{ print $3 }'`
+	sudo vgextend $vgname /dev/sdb1
+	sleep 1
+	sudo lvextend -l+100%FREE /dev/${vgname}/root
+	sleep 1
+	if cat /etc/fstab | grep xfs > /dev/null; then
+		sudo xfs_growfs /dev/${vgname}/root
+	else
+		sudo resize2fs /dev/${vgname}/root
+	fi
+elif [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+	sudo vgextend ${vg_name} /dev/sdb1
+	sleep 1
+	sudo lvextend -l+100%FREE /dev/${vg_name}/root
+	sleep 1
+	sudo resize2fs /dev/${vg_name}/root
+elif [ "$OS" == "fedora" ]; then
+	vgname=`sudo vgdisplay  | grep "VG Name" | awk '{ print $3 }'`
+	sudo vgextend $vgname /dev/sdb1
+	sleep 1
+	sudo lvextend -l+100%FREE /dev/${vgname}/root
+	sleep 1
+	if cat /etc/fstab | grep xfs > /dev/null; then
+		sudo xfs_growfs /dev/${vgname}/root
+	else
+		sudo resize2fs /dev/${vgname}/root
+	fi
+fi

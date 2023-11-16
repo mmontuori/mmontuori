@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo mkdir "/media/3T Drive"
+sudo /sbin/mount.ntfs /dev/sdf1 /media/3T\ Drive -o rw,nosuid,nodev,uhelper=udisks,uid=1000,gid=1000,dmask=0077,fmask=0177

@@ -1,0 +1,11 @@
+<network>
+  <name>private</name>
+  <forward mode='nat'/>
+  <bridge name='virbr1' stp='on' delay='0' />
+  <ip address='192.168.100.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.100.128' end='192.168.100.254' />
+      <host mac='52:54:00:ba:37:1f' name='oscontroller' ip='192.168.100.10' />
+    </dhcp>
+  </ip>
+</network>

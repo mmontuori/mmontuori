@@ -1,0 +1,40 @@
+#!/bin/bash
+
+CLEM_ROOT="/run/user/1000/gvfs/mtp:host=%5Busb%3A001%2C003%5D/NAND FLASH"
+DEST_DIR="/tmp/clempad_backup"
+
+if ! cd "$CLEM_ROOT"; then
+	echo "ERROR: cannot find $CLEM_ROOT"
+	exit
+fi
+
+if ! test -d $DEST_DIR; then
+	echo "ERROR: directory $DEST_DIR not found!"
+	exit
+fi
+
+names_to_scan="Picture Pictures Video Paint Movie Music Camera"
+first_line="true"
+
+for name_to_scan in $names_to_scan; do
+	if [ "$first_line" == "true" ]; then
+		find_cmd="$find_cmd -type d -name $name_to_scan "
+		first_line="false"
+	else
+		find_cmd="$find_cmd -or -type d -name $name_to_scan "
+	fi
+done
+
+find_cmd="find . $find_cmd"
+
+echo -n "scanning for directories..."
+dirs=`$find_cmd`
+echo "done"
+
+for dir in $dirs; do
+	echo -n "backing up directory: $dir..."
+	cp -R $dir $DEST_DIR
+	echo "done"
+done
+
+echo "backup completed. Copy tmp directory $DEST_DIR into final destination"

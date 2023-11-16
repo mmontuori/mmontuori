@@ -1,0 +1,82 @@
+#!/bin/bash
+
+CUR_DIR=`pwd`
+SDK_HOME="/opt/android-sdk"
+GRADLE_HOME="/opt/gradle-"
+ANDROID_PLATFORM="26"
+BUILD_TOOLS_VERSION="28.0.2"
+GRADLE_VERSION="4.10"
+SDK_TOOLS_VERSION="4333796"
+
+function get_distro() {
+	if cat /etc/*release* | grep -i ubuntu > /dev/null 2>&1; then
+		echo "ubuntu"
+	elif cat /etc/*release* | grep -i centos >/dev/null 2>&1; then
+		echo "centos"
+	else
+		echo "unsupported"
+		exit
+	fi 
+}
+
+function install_java() {
+	echo "installing java..."
+	if [ "$distro" == "ubuntu" ]; then
+		apt-get -y install openjdk-8-jdk-headless
+	elif [ "$distro" == "centos" ]; then
+		yum -y install java-1.8.0-openjdk java-1.8.0-openjdk-devel
+	else
+		echo "unsupported"
+		exit
+	fi
+}
+
+function install_android_sdk() {
+	if ! test -d $SDK_HOME; then
+		echo "installing android sdk to $SDK_HOME..."
+		cd /opt
+		if ! test -f sdk-tools-linux-${SDK_TOOLS_VERSION}.zip; then
+			wget https://dl.google.com/android/repository/sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
+		fi
+		mkdir -p $SDK_HOME
+		cd $SDK_HOME
+		#unzip ${tmpdir}/sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
+		unzip /opt/sdk-tools-linux-${SDK_TOOLS_VERSION}.zip
+		cd ${SDK_HOME}/tools/bin
+		echo "y" | ./sdkmanager "platforms;android-${ANDROID_PLATFORM}"
+		echo "y" | ./sdkmanager "platform-tools"
+		echo "y" | ./sdkmanager "build-tools;${BUILD_TOOLS_VERSION}"
+		echo "y" | ./sdkmanager "extras;android;m2repository"
+		echo "y" | ./sdkmanager "extras;google;m2repository"
+		echo "y" | ./sdkmanager --update
+	fi
+}
+
+function install_gradle() {
+	if ! test -d ${GRADLE_HOME}${GRADLE_VERSION}; then
+		cd /opt
+		if ! test -f gradle-${GRADLE_VERSION}-bin.zip; then
+			wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+		fi
+		unzip gradle-${GRADLE_VERSION}-bin.zip
+	fi
+}
+
+if [ "$SUDO_USER" == "" ]; then
+	echo "this program must be executed with sudo as root"
+	exit 1
+fi
+
+distro=`get_distro`
+if [ "$distro" == "unsupported" ]; then
+	echo "unsupported os"
+	exit 1
+fi
+echo "running on $distro"
+
+echo "installing java..."
+install_java > /dev/null
+echo "installing android sdk..."
+install_android_sdk > /dev/null
+echo "installing gradle..."
+install_gradle > /dev/null

@@ -1,0 +1,46 @@
+host router
+	hostname 192.168.1.1
+host mc-server minecraft minecraft.montuori.net
+	hostname 150.136.93.147
+	user ubuntu
+	IdentityFile ~/.ssh/oracle_cloud
+host mc-server2 minecraft2 minecraft2.montuori.net
+	hostname 150.136.162.204
+	user ubuntu
+	IdentityFile ~/.ssh/oracle_cloud
+host mc-test minecraft-test minecraft-test.montuori.net
+	hostname 141.148.38.149
+	user ubuntu
+	IdentityFile ~/.ssh/oracle_cloud
+host oci-dev
+	hostname 129.159.91.227
+	user opc
+	IdentityFile ~/.ssh/oracle_cloud
+host router montuori64
+	hostname 192.168.1.50
+	user michael
+
+host 192.168.1.14 storage
+	user root
+
+host c?? iad? c??-new
+	hostname %h.leetnet.com
+	user michael
+
+host godaddy
+	hostname 160.153.76.161
+	user  ahiqgzfqkxwf
+	IdentityFile ~/.ssh/dc_key
+
+host storage
+	hostname 192.168.1.14
+	user root
+
+host m01
+	hostname m01.montuori.net
+	user michael
+
+host *
+	user michael
+	StrictHostKeyChecking no
+	UserKnownHostsFile=/dev/null

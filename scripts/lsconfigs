@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if ! test -d arch/arm/configs; then
+	echo "ERROR: directory arch/arm/configs not found!"
+	exit
+fi
+
+cd arch/arm/configs
+
+if [ "$1" == "" ]; then
+ 	files=`ls`
+else
+	files=`ls *${1}*`
+fi
+
+for file in $files; do
+	echo $file
+done
+

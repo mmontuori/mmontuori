@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if lsb_release -a 2>&1 | grep -i ubuntu >/dev/null 2>&1; then
+	sudo apt autoremove --purge 
+fi

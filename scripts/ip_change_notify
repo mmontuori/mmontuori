@@ -1,0 +1,29 @@
+#!/opt/bin/bash
+
+domain_name="home.montuori.net"
+old_ip_file="/tmp/${domain_name}.ip"
+current_ip=`nslookup ${domain_name} | grep "Address:" | tail -1 | awk '{ print $2 }'`
+app_password="bduk ycvw pznz ustq"
+
+echo "${domain_name} current ip is: ${current_ip}"
+
+if ! test -f ${old_ip_file}; then
+	echo "old ip file not found. Populating for first time"
+	echo "${current_ip}" > ${old_ip_file}
+	exit
+fi
+
+old_ip=`cat ${old_ip_file}`
+
+if [ "${old_ip}" != "${current_ip}" ]; then
+	echo "ip address for ${domain_name} has changed from ${old_ip} to ${current_ip}"
+	msmtp -a gmail michael.montuori@gmail.com <<eof
+From: Michael <michael.montuori@gmail.com>
+To: Michael <michael.montuori@gmail.com>
+Subject: IP Address Change Notification for domain:${domain_name}
+ip address for ${domain_name} has changed from ${old_ip} to ${current_ip}
+eof
+	echo "${current_ip}" > ${old_ip_file}
+else
+	echo "no ip address change detected!"
+fi

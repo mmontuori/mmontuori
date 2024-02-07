@@ -1,6 +1,6 @@
 host router
 	hostname 192.168.1.1
-host mc-server minecraft minecraft.montuori.net preciso24.com domanicolor.com pipeawk.com
+host mc-server minecraft minecraft.montuori.net preciso24.com domanicolor.com pipeawk.com greenhall
 	hostname 150.136.93.147
 	user ubuntu
 	IdentityFile ~/.ssh/oracle_cloud
@@ -25,6 +25,7 @@ host 192.168.1.14 storage
 
 host a?? c?? iad? c??-new
 	hostname %h.leetnet.com
+	ciphers aes256-gcm@openssh.com
 	user michael
 
 host godaddy

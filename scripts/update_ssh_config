@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp /mnt/c/git-repos/mmontuori/ssh/config ~/.ssh/config
+
